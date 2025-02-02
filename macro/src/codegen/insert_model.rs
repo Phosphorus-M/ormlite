@@ -57,10 +57,19 @@ pub fn struct_InsertModel(ast: &DeriveInput, attr: &ModelMeta) -> TokenStream {
             }
         }    
     } else {
+        if let Some(extra_derives) = &attr.extra_derives {
         quote! {
-            #[derive(Debug)]
+            #[derive(Debug, #(#extra_derives,)*)]
             #vis struct #insert_model {
                 #(#struct_fields,)*
+            }
+        }
+    } else {
+        quote! {
+                #[derive(Debug)]
+                #vis struct #insert_model {
+                    #(#struct_fields,)*
+            }
             }
         }
     }

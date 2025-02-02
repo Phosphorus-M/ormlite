@@ -75,6 +75,10 @@ where
         A: 'a + Send + sqlx::Acquire<'a, Database = DB>,
         Self: Send;
 
+    fn insert_many<'e, E>(values: Vec<Self>, db: E) -> BoxFuture<'e, Result<Vec<Self>>>
+    where
+        E: 'e + sqlx::Executor<'e, Database = DB>;
+
     /// `Model` objects can't track what fields are updated, so this method will update all fields.
     /// If you want to update only some fields, use `update_partial` instead.
     fn update_all_fields<'e, E>(self, db: E) -> BoxFuture<'e, Result<Self>>
@@ -109,4 +113,8 @@ pub trait TableMeta {
     fn table_name() -> &'static str;
     fn table_columns() -> &'static [&'static str];
     fn primary_key() -> Option<&'static str>;
+    fn primary_key_placeholder_idx() -> Option<usize> {
+        let col = Self::primary_key()?;
+        Self::table_columns().iter().position(|&c| c == col).map(|i| i + 1)
+    }
 }

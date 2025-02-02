@@ -1,11 +1,13 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
-pub use ::sqlx::{Column, ColumnIndex, Database, Decode, Row};
 pub use model::{FromRow, Insert, IntoArguments, Model, TableMeta};
 pub use ormlite_core::BoxFuture;
 pub use ormlite_core::{Error, Result};
+pub use ormlite_macro::Enum;
+pub use sqlx::{Column, ColumnIndex, Database, Decode, Row};
+pub use tokio_stream::StreamExt;
 
-pub use ::sqlx::pool::PoolOptions;
-pub use ::sqlx::{
+pub use sqlx::pool::PoolOptions;
+pub use sqlx::{
     query, query_as, query_as_with, query_with, Acquire, Arguments, ConnectOptions, Connection, Encode, Executor, Pool,
 };
 
@@ -35,10 +37,9 @@ pub mod database {
 #[doc(hidden)]
 pub mod __private {
     pub use ormlite_core::insert::Insertion;
-    pub use ormlite_core::join::{JoinDescription, SemanticJoinType};
-    pub use sqlmo::query::Values;
-    pub use sqlmo::Insert;
-    pub use tokio_stream::StreamExt;
+    pub use ormlite_core::join::JoinDescription;
+    pub use sqlmo::query::{Values, Value};
+    pub use sqlmo::{Insert, Dialect, ToSql};
 }
 
 #[cfg(feature = "postgres")]

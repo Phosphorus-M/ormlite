@@ -1,4 +1,6 @@
-set dotenv-load := true
+set dotenv-load
+set positional-arguments
+set export
 
 test:
     just attr/test
@@ -16,15 +18,8 @@ version level:
    (cd ormlite && cargo build --features runtime-tokio-rustls,sqlite)
 
    cargo set-version --bump {{ level }} --workspace
-   VERSION=$(toml get ormlite/Cargo.toml package.version)
-
-   toml set macro/Cargo.toml dependencies.ormlite-core.version $VERSION
-   (cd macro && cargo update)
-   toml set ormlite/Cargo.toml dependencies.ormlite-core.version $VERSION
-   toml set ormlite/Cargo.toml dependencies.ormlite-macro.version $VERSION
-   (cd ormlite && cargo update)
-
-   git commit -am "Bump version {{level}} to $VERSION"
+   VERSION=$(rg -om1 "version = \"(.*)\"" --replace '$1' ormlite/Cargo.toml)
+   git commit -am "Bump version {{level}}"
    git tag v$VERSION
    git push
    git push --tags
@@ -45,3 +40,6 @@ doc:
 
 install:
     @just cli/install
+
+postgres *ARGS:
+    @just ormlite/postgres $ARGS

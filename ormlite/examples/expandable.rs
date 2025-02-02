@@ -2,11 +2,9 @@ use ormlite::model::{Insert, Join, JoinMeta, Model};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlmo::ToSql;
-use serde::{Serialize, Deserialize};
-use serde_json::json;
 
 use ormlite::Connection;
-#[path = "../setup.rs"]
+#[path = "../tests/setup.rs"]
 mod setup;
 
 #[derive(Debug, Model, Clone, Serialize, Deserialize)]
@@ -70,24 +68,6 @@ async fn main() {
     assert_eq!(champ.number, 5);
     assert_eq!(champ.organization.id, 12321);
     assert_eq!(champ.organization.name, "my org");
-
-    let champ_copy = InsertUser {
-        name: "Champ".to_string(),
-        organization: Join::new(org.clone()),
-        ty: 12,
-    };
-    let champ_json = json!(champ_copy).to_string();
-
-    assert_eq!(champ_json, r#"{"name":"Champ","organization":{"id":12321,"name":"my org"},"ty":12}"#);
-
-    let champ_deserializing = serde_json::from_str::<InsertUser>(r#"{"name":"Champ","organization":{"id":12321,"name":"my org"},"ty":12}"#);
-
-    let Ok(champ_deserialized) = champ_deserializing else {
-        panic!("Deserialize failing");
-    };
-
-    assert_eq!(champ_deserialized.name, champ_copy.name);
-    assert_eq!(champ_deserialized.organization.name, champ_copy.organization.name);
 
     let champ_copy = InsertUser {
         name: "Champ".to_string(),
